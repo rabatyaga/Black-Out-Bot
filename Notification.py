@@ -1,4 +1,18 @@
 from datetime import datetime
+import telebot
+from TOKEN import token, chatId
+from notifiers import get_notifier
+bot = telebot.TeleBot(token)
+@bot.message_handler(content_types=['text'])
+def get_text_messages(message):
+    if message.text == '/start':
+        bot.send_message(message.from_user.id, "Привіт!\nЦей бот створено для моніторингу графіка відключень світла у місті Львів. "
+                                               "Також є можливість налаштувати сповіщення про відлючення світла відповідно до певної групи.\n"
+                                               "Щоб продовжити натисніть /putin_huilo")
+    elif message.text == '/putin_huilo':
+        bot.send_message(message.from_user.id, 'Оберіть номер вашої групи:')
+
+
 class Electricity:
     current_time = datetime.now().strftime("%H")
 
@@ -55,6 +69,8 @@ class Electricity:
     def get_time_zone(self):
         return '-'.join(list(filter(lambda x: int(self.current_time) in range(int(x[0]), int(x[1])), map(lambda x: x.split('-'), self.TYPE_1.keys())))[0])
 
+    def inform(self):
+        pass
     def get_condition(self):
         if self.group == 1:
             return self.GROUP_1[self.day][self.get_time_zone()]
@@ -71,9 +87,8 @@ class Electricity:
         else:
             return self.GROUP_3[self.day]
 
-V_V = Electricity(3, "П'ятниця")
-print(V_V.get_condition())
-print(V_V.get_day_sсhedule())
-print(V_V.__dict__)
 
+
+
+bot.polling(none_stop=True, interval=0)
 
