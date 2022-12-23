@@ -74,7 +74,7 @@ def choose_group(message):
     markup_inline_2 = types.InlineKeyboardMarkup()
     url = types.InlineKeyboardButton(text='Дізнатись групу', url='https://poweroff.loe.lviv.ua/gav_city3')
     markup_inline_2.add(url)
-    bot.send_message(message.chat.id, '<b>Не знаєте в якій ви групі?:</b>', reply_markup=markup_inline_2,
+    bot.send_message(message.chat.id, '<b>Не знаєте в якій ви групі?</b>', reply_markup=markup_inline_2,
                      parse_mode='HTML')
 
 
@@ -93,17 +93,7 @@ def to_json(callback):
     with open('user_data.json', 'w', encoding='utf-8') as f_o:
         json.dump(data_from_json, f_o, indent=4, ensure_ascii=False)
     bot.send_message(callback.message.chat.id, text=f'Вітаю, {user_name}. Вас зареєстровано.\n'
-                                                    f'Ваша група: {group_id}\n'
-                                                    f'Згідно графіку відключень від Львівобленерго у вашому будинку '
-                                                    f'на цей момент:')
-    with open('user_data.json', 'r', encoding='utf-8') as f_o:
-        data_from_json = json.load(f_o)
-        condition = Electricity(int(data_from_json[str(user_id)]['group'])).get_condition()
-        if condition == 'Є Енергія':
-            img = open(Dicts.PICTURE_2, 'rb')
-            bot.send_photo(callback.message.chat.id, img, caption=condition)
-        else:
-            bot.send_message(callback.message.chat.id, text=condition, parse_mode='HTML')
+                                                    f'Ваша група: №{group_id}')
     choose_option(callback.message)
 
 
@@ -133,26 +123,44 @@ def option(message):
         condition = Electricity(int(group)).get_condition()
         if condition == 'Є Енергія':
             img = open(Dicts.PICTURE_2, 'rb')
-            bot.send_photo(message.chat.id, img, caption=condition)
-        else:
-            bot.send_message(message.chat.id, text=condition, parse_mode='HTML')
+            bot.send_photo(message.chat.id, img, caption=f'Згідно графіку відключень від Львівобленерго у вашому будинку'
+                                                         f' на цей момент імовірно:\n'
+                                                         f'<b>✅ {condition} ✅</b>',
+                           parse_mode='HTML')
+        elif condition == 'Немає Енергії':
+            img = open(Dicts.PICTURE_3, 'rb')
+            bot.send_photo(message.chat.id, img, caption=f'Згідно графіку відключень від Львівобленерго у вашому будинку'
+                                                         f' на цей момент імовірно:\n'
+                                                         f'<b>❌ {condition} ❌</b>',
+                           parse_mode='HTML')
+        choose_option(message)
     elif message.text == '2 🕯':
+        bot.send_message(message.chat.id, text=f'<b>{Dicts.WEEK_DAY[Electricity.current_day]}, Група №{group}</b>',
+                         parse_mode='HTML')
         condition = Electricity(int(group)).get_day_sсhedule()
         for k, v in condition.items():
             bot.send_message(message.chat.id, text=f'<b>{k} : {v}</b>', parse_mode='HTML')
+        choose_option(message)
     elif message.text == '3 📅':
-            if group == '1':
-                img = open(Dicts.SCHEDULE_1, 'rb')
-                bot.send_photo(message.chat.id, img)
-            elif group == '2':
-                img = open(Dicts.SCHEDULE_2, 'rb')
-                bot.send_photo(message.chat.id, img)
-            else:
-                img = open(Dicts.SCHEDULE_3, 'rb')
-                bot.send_photo(message.chat.id, img)
+        if group == '1':
+            img = open(Dicts.SCHEDULE_1, 'rb')
+            bot.send_photo(message.chat.id, img)
+        elif group == '2':
+            img = open(Dicts.SCHEDULE_2, 'rb')
+            bot.send_photo(message.chat.id, img)
+        else:
+            img = open(Dicts.SCHEDULE_3, 'rb')
+            bot.send_photo(message.chat.id, img)
+        choose_option(message)
+    # elif message.text == '4 ⏰':
+    #     while True:
+    #         time.sleep(60)
+    #         if Electricity.current_time == '12:00':  # Выставляете ваше время
+    #             print('pass')
+    #             bot.send_message("тут айди вашей группы", 'text')
 
-    choose_option(message)
-
+    elif message.text == '5 🔁':
+        choose_group(message)
 
 
 
