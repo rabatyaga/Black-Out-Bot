@@ -1,5 +1,9 @@
 class Dicts:
+    SCHEDULE_1 = '1group.png'
+    SCHEDULE_2 = '2group.png'
+    SCHEDULE_3 = '3group.png'
     PICTURE_1 = 'night_lviv.jpg'
+    PICTURE_2 = 'lights.jpg'
 
     TYPE_1 = {'1-5': 'Можливе Відключення',
               '5-9': 'Немає Енергії',
