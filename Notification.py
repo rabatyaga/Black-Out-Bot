@@ -5,6 +5,7 @@ from telebot import types
 from Data import Dicts
 import requests
 from envparse import Env
+from telegram_client import TelegramClient
 
 """Створення змінних оточення"""
 env = Env()
@@ -12,7 +13,17 @@ TOKEN = env.str("TOKEN")
 ADMIN_CHAT_ID = env.int("ADMIN_CHAT_ID")
 
 
-bot = telebot.TeleBot(token=TOKEN)
+class MyBot(telebot.TeleBot):
+    def __init__(self, telegram_client: TelegramClient, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.telegram_client = telegram_client
+
+
+
+telegram_client = TelegramClient(token=TOKEN, base_url="https://api.telegram.org")
+bot = MyBot(token=TOKEN, telegram_client=telegram_client)
+
+
 class Electricity:
     current_time = datetime.now().strftime("%H")
     current_day = datetime.today().weekday()
@@ -178,11 +189,18 @@ def option(message):
 
 
 
+
+def create_err_message(err: Exception) -> str:
+    return f"{datetime.now} ::: {err.__class__} ::: {err}"
+
+
+
 while True:
     try:
         bot.polling()
     except Exception as err:
-        requests.post(f"https://api.telegram.org/bot5876754481:AAFDMskmHazPVNwcWIvEyX9ww4BZwWoKueE"
-                      f"/sendMessage?chat_id=336409011&text={datetime.now} ::: {err.__class__} ::: {err}")
+        bot.telegram_client.post(method='sendMessage', params={"text": create_err_message(err),
+                                                               "chat_id": ADMIN_CHAT_ID})
+
 
 
