@@ -3,9 +3,9 @@ from datetime import datetime
 import telebot
 from telebot import types
 from Data import Dicts
-import requests
 from envparse import Env
 from telegram_client import TelegramClient
+from sqlclient import SQLiteClient, UserActioner
 
 """Створення змінних оточення"""
 env = Env()
@@ -14,15 +14,19 @@ ADMIN_CHAT_ID = env.int("ADMIN_CHAT_ID")
 
 
 class MyBot(telebot.TeleBot):
-    def __init__(self, telegram_client: TelegramClient, *args, **kwargs):
+    def __init__(self, telegram_client: TelegramClient, user_actioner: UserActioner, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
         self.telegram_client = telegram_client
+        self.user_actioner = user_actioner
+
+    def setup_resources(self):
+        self.user_actioner.setup()
 
 
-
+user_actioner = UserActioner(SQLiteClient('users.db'))
 telegram_client = TelegramClient(token=TOKEN, base_url="https://api.telegram.org")
-bot = MyBot(token=TOKEN, telegram_client=telegram_client)
-
+bot = MyBot(token=TOKEN, telegram_client=telegram_client, user_actioner=user_actioner)
+bot.setup_resources()
 
 class Electricity:
     current_time = datetime.now().strftime("%H")
@@ -98,18 +102,21 @@ def choose_group(message):
 
 @bot.callback_query_handler(func=lambda callback: callback.data)
 def to_json(callback):
-    with open('user_data.json', 'r', encoding='utf-8') as f_o:
-        data_from_json = json.load(f_o)
+
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name
+    chat_id = callback.message.chat.id
     group_id = callback.data
-    if str(user_id) not in data_from_json:
-        data_from_json[user_id] = {'group': group_id, 'username': user_name}
+
+    user = bot.user_actioner.get_user(user_id=str(user_id))
+
+    if not user:
+        bot.user_actioner.create_user(user_id=str(user_id), username=user_name, chat_id=chat_id)
+        bot.user_actioner.set_group(user_id=str(user_id), group_id=group_id)
     else:
-        del data_from_json[str(user_id)]
-        data_from_json[user_id] = {'group': group_id}
-    with open('user_data.json', 'w', encoding='utf-8') as f_o:
-        json.dump(data_from_json, f_o, indent=4, ensure_ascii=False)
+        bot.user_actioner.set_group(user_id=str(user_id), group_id=group_id)
+
+
     bot.send_message(callback.message.chat.id, text=f'Вітаю, {user_name}. Вас зареєстровано.\n'
                                                     f'Ваша група: №{group_id}')
     choose_option(callback.message)
@@ -134,9 +141,7 @@ def choose_option(message):
 
 
 def option(message):
-    with open('user_data.json', 'r', encoding='utf-8') as f_o:
-        data_from_json = json.load(f_o)
-        group = data_from_json[str(message.chat.id)]['group']
+    group = bot.user_actioner.get_group(user_id=str(message.from_user.id))
     if message.text == '1 💡':
         condition = Electricity(int(group)).get_condition()
         if condition == 'Є Енергія':
