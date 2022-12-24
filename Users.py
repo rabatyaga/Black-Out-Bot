@@ -9,9 +9,9 @@ class SQLiteClient:
     def create_conn(self):
         self.conn = sqlite3.connect(self.filepath, check_same_thread=False)
 
-    def execute_command(self, command: str):
+    def execute_command(self, command: str, params: tuple):
         if self.conn is not None:
-            self.conn.execute(command)
+            self.conn.execute(command, params)
             self.conn.commit()
         else:
             raise ConnectionError("you need to create connection to database!")
@@ -27,6 +27,22 @@ class SQLiteClient:
 
 class UserActioner:
 
+    CREATE_USER = """
+    INSERT INTO users (user_id, username, chat_id) VALUES (?, ?, ?);
+    """
+
+    GET_USER = """
+    SELECT user_id, username, chat_id FROM users WHERE user_id = %s;
+    """
+
+    SET_GROUP = """
+    UPDATE users SET group_id = ? WHERE user_id = ?;
+    """
+
+    GET_GROUP = """
+    SELECT group_id FROM users WHERE user_id = %s;
+    """
+
     def __init__(self, database_client: SQLiteClient):
         self.database_client = database_client
 
@@ -34,31 +50,15 @@ class UserActioner:
         self.database_client.create_conn()
 
     def get_user(self, user_id: str):
-        GET_USER = f"SELECT user_id, username, chat_id FROM users WHERE user_id = {user_id};"
-        user = self.database_client.execute_select_command(GET_USER)
+        user = self.database_client.execute_select_command(self.GET_USER % user_id)
         return user[0] if user else []
 
     def create_user(self, user_id: str, username: str, chat_id: int):
-        CREATE_USER = f"INSERT INTO users (user_id, username, chat_id) VALUES ({user_id}, '{username}', {chat_id});"
-        self.database_client.execute_command(CREATE_USER)
+        self.database_client.execute_command(self.CREATE_USER, (user_id, username, chat_id))
 
     def set_group(self, user_id: str, group_id: int):
-        SET_GROUP = f"UPDATE users SET group_id = {group_id} WHERE user_id = {user_id};"
-        self.database_client.execute_command(SET_GROUP)
+        self.database_client.execute_command(self.SET_GROUP, (group_id, user_id))
 
-
-# import sqlite3
-# conn = sqlite3.connect('users.db')
-# cursor = conn.cursor()
-#
-# CREATE_QUERY = """
-#     CREATE TABLE IF NOT EXISTS users (
-#         user_id int PRIMARY KEY,
-#         username text,
-#         chat_id int,
-#         group_id int
-#     );
-# """
-# conn.execute(CREATE_QUERY)
-#
-# conn.commit()
+    def get_group(self, user_id: str):
+        user = self.database_client.execute_select_command(self.GET_GROUP % user_id)
+        return user[0][0]
