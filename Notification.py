@@ -1,11 +1,18 @@
 import json
 from datetime import datetime
 import telebot
-from TOKEN import token
 from telebot import types
 from Data import Dicts
+import requests
+from envparse import Env
 
-bot = telebot.TeleBot(token)
+"""Створення змінних оточення"""
+env = Env()
+TOKEN = env.str("TOKEN")
+ADMIN_CHAT_ID = env.int("ADMIN_CHAT_ID")
+
+
+bot = telebot.TeleBot(token=TOKEN)
 class Electricity:
     current_time = datetime.now().strftime("%H")
     current_day = datetime.today().weekday()
@@ -133,6 +140,13 @@ def option(message):
                                                          f' на цей момент імовірно:\n'
                                                          f'<b>❌ {condition} ❌</b>',
                            parse_mode='HTML')
+        else:
+            img = open(Dicts.PICTURE_4, 'rb')
+            bot.send_photo(message.chat.id, img,
+                           caption=f'Згідно графіку відключень від Львівобленерго у вашому будинку'
+                                   f' на цей момент імовірно:\n'
+                                   f'<b>⚠️ {condition} ⚠️</b>',
+                           parse_mode='HTML')
         choose_option(message)
     elif message.text == '2 🕯':
         bot.send_message(message.chat.id, text=f'<b>{Dicts.WEEK_DAY[Electricity.current_day]}, Група №{group}</b>',
@@ -164,7 +178,11 @@ def option(message):
 
 
 
-
-bot.polling()
+while True:
+    try:
+        bot.polling()
+    except Exception as err:
+        requests.post(f"https://api.telegram.org/bot5876754481:AAFDMskmHazPVNwcWIvEyX9ww4BZwWoKueE"
+                      f"/sendMessage?chat_id=336409011&text={datetime.now} ::: {err.__class__} ::: {err}")
 
 
