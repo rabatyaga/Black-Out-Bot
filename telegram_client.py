@@ -16,7 +16,7 @@ class TelegramClient:
         resp = requests.post(url, params=params, data=body)
         return resp.json()
 
-if __name__ == "__Notification__":
+if __name__ == "__main__":
     token = "5876754481:AAFDMskmHazPVNwcWIvEyX9ww4BZwWoKueE"
     telegram_client = TelegramClient(token=token, base_url="https://api.telegram.org")
     my_params = {"chat_id": 336409011, "text": "sampleText"}

@@ -13,7 +13,7 @@ class Electricity:
         self.time = time
 
     def get_time_zone(self):
-        if int(self.time) >= 21:
+        if int(self.time) >= 21 or int(self.time) == 0:
             return '21-1'
         else:
             ranges = map(lambda x: x.split('-'), Dicts.TYPE_1.keys())
@@ -24,7 +24,9 @@ class Electricity:
         right_border = self.get_time_zone().split('-')[1]
         difference = int(right_border) - int(self.current_time)
         if self.current_condition in ("Можливе Відключення", "Є Енергія") and difference == 1:
-            return 'Увага! За годину можливе відключення електроенергії!'
+            return True
+        else:
+            return False
 
 
 
@@ -49,8 +51,4 @@ class Electricity:
             return self.GROUP_3[Dicts.WEEK_DAY[self.day]]
 
 
-# a = Electricity(3)
-# print(a.current_time)
-# print(a.get_time_zone().split('-')[1])
-# print(a.get_condition())
-# print(a.inform())
+print(Electricity().get_condition(1))

@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 import telebot
 from telebot import types
@@ -6,6 +5,11 @@ from Data import Dicts
 from envparse import Env
 from telegram_client import TelegramClient
 from sqlclient import SQLiteClient, UserActioner
+from logging import getLogger, StreamHandler
+
+logger = getLogger(__name__)
+logger.addHandler(StreamHandler())
+logger.setLevel("INFO")
 
 """Створення змінних оточення"""
 env = Env()
@@ -22,11 +26,17 @@ class MyBot(telebot.TeleBot):
     def setup_resources(self):
         self.user_actioner.setup()
 
+    def shutdown_resources(self):
+        self.user_actioner.shutdown()
+
+    def shutdown(self):
+        self.shutdown_resources()
+
 
 user_actioner = UserActioner(SQLiteClient('users.db'))
 telegram_client = TelegramClient(token=TOKEN, base_url="https://api.telegram.org")
 bot = MyBot(token=TOKEN, telegram_client=telegram_client, user_actioner=user_actioner)
-bot.setup_resources()
+
 
 class Electricity:
     current_time = datetime.now().strftime("%H")
@@ -36,22 +46,30 @@ class Electricity:
     GROUP_2 = Dicts.GROUP_2
     GROUP_3 = Dicts.GROUP_3
 
-    def __init__(self, group, time=current_time):
-        self.group = group
+    def __init__(self, time=current_time):
         self.time = time
 
     def get_time_zone(self):
-        if int(self.time) >= 21:
+        if int(self.time) >= 21 or int(self.time) == 0:
             return '21-1'
         else:
             ranges = map(lambda x: x.split('-'), Dicts.TYPE_1.keys())
             return '-'.join(list(filter(lambda x: int(self.current_time) in range(int(x[0]), int(x[1])), ranges))[0])
 
-    def inform(self):
-        pass
+    def inform(self, current_condition):
+        self.current_condition = current_condition
+        right_border = self.get_time_zone().split('-')[1]
+        difference = int(right_border) - int(self.current_time)
+        if self.current_condition in ("Можливе Відключення", "Є Енергія") and difference == 1:
+            return True
+        else:
+            return False
 
-    def get_condition(self, day=current_day):
+
+
+    def get_condition(self, group, day=current_day):
         self.day = day
+        self.group = group
         if self.group == 1:
             return self.GROUP_1[Dicts.WEEK_DAY[self.day]][self.get_time_zone()]
         elif self.group == 2:
@@ -59,8 +77,9 @@ class Electricity:
         else:
             return self.GROUP_3[Dicts.WEEK_DAY[self.day]][self.get_time_zone()]
 
-    def get_day_sсhedule(self, day=current_day):
+    def get_day_sсhedule(self, group, day=current_day):
         self.day = day
+        self.group = group
         if self.group == 1:
             return self.GROUP_1[Dicts.WEEK_DAY[self.day]]
         elif self.group == 2:
@@ -72,14 +91,11 @@ class Electricity:
 
 
 
-
 @bot.message_handler(commands=['start'])
 def start_message(message):
     img = open(Dicts.PICTURE_1, 'rb')
-    bot.send_photo(message.chat.id, img, caption="Привіт!\nЦей бот створено для моніторингу графіка відключень світла"
-                                                 " у місті Львів. "
-                                    "Також є можливість налаштувати сповіщення про відключення світла відповідно до "
-                                                 "певної групи.\n"
+    bot.send_photo(message.chat.id, img, caption="Привіт!\nЦей бот послуговується графіками <b>планових</b> відключень від "
+                                                 "Львівобленерго. Інформація про <b>аварійні</b> відключення не надається. "
                                     "Щоб продовжити натисніть <b>/putin_huilo</b>", parse_mode='HTML')
 
 
@@ -102,7 +118,7 @@ def choose_group(message):
 
 @bot.callback_query_handler(func=lambda callback: callback.data)
 def to_json(callback):
-
+    tg_name = callback.from_user.username
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name
     chat_id = callback.message.chat.id
@@ -111,7 +127,7 @@ def to_json(callback):
     user = bot.user_actioner.get_user(user_id=str(user_id))
 
     if not user:
-        bot.user_actioner.create_user(user_id=str(user_id), username=user_name, chat_id=chat_id)
+        bot.user_actioner.create_user(user_id=str(user_id), username=user_name, chat_id=chat_id, tg_name=tg_name)
         bot.user_actioner.set_group(user_id=str(user_id), group_id=group_id)
     else:
         bot.user_actioner.set_group(user_id=str(user_id), group_id=group_id)
@@ -143,7 +159,7 @@ def choose_option(message):
 def option(message):
     group = bot.user_actioner.get_group(user_id=str(message.from_user.id))
     if message.text == '1 💡':
-        condition = Electricity(int(group)).get_condition()
+        condition = Electricity().get_condition(int(group))
         if condition == 'Є Енергія':
             img = open(Dicts.PICTURE_2, 'rb')
             bot.send_photo(message.chat.id, img, caption=f'Згідно графіку відключень від Львівобленерго у вашому будинку'
@@ -167,28 +183,29 @@ def option(message):
     elif message.text == '2 🕯':
         bot.send_message(message.chat.id, text=f'<b>{Dicts.WEEK_DAY[Electricity.current_day]}, Група №{group}</b>',
                          parse_mode='HTML')
-        condition = Electricity(int(group)).get_day_sсhedule()
+        condition = Electricity().get_day_sсhedule(int(group))
         for k, v in condition.items():
             bot.send_message(message.chat.id, text=f'<b>{k} : {v}</b>', parse_mode='HTML')
         choose_option(message)
     elif message.text == '3 📅':
-        if group == '1':
+        if group == 1:
             img = open(Dicts.SCHEDULE_1, 'rb')
             bot.send_photo(message.chat.id, img)
-        elif group == '2':
+        elif group == 2:
             img = open(Dicts.SCHEDULE_2, 'rb')
             bot.send_photo(message.chat.id, img)
         else:
             img = open(Dicts.SCHEDULE_3, 'rb')
             bot.send_photo(message.chat.id, img)
         choose_option(message)
-    # elif message.text == '4 ⏰':
-    #     while True:
-    #         time.sleep(60)
-    #         if Electricity.current_time == '12:00':  # Выставляете ваше время
-    #             print('pass')
-    #             bot.send_message("тут айди вашей группы", 'text')
+    elif message.text == '4 ⏰':
+        bot.send_message(message.chat.id, text=f'Вітаю, {user_actioner.get_user(user_id=str(message.from_user.id))[1]}. '
+                                               f'Ви підключили сповіщення!\n'
+                                               'Кожного разу за годину перед можливим відключенням '
+                                               'Вам надходитиме попереджувальне повідомлення.')
 
+        bot.user_actioner.set_notify(user_id=str(message.from_user.id), notifications=1)
+        choose_option(message)
     elif message.text == '5 🔁':
         choose_group(message)
 
@@ -200,12 +217,18 @@ def create_err_message(err: Exception) -> str:
 
 
 
-while True:
-    try:
-        bot.polling()
-    except Exception as err:
-        bot.telegram_client.post(method='sendMessage', params={"text": create_err_message(err),
-                                                               "chat_id": ADMIN_CHAT_ID})
+if __name__ == "__main__":
+    while True:
+        try:
+            bot.setup_resources()
+            bot.polling()
+        except Exception as err:
+            error_message = create_err_message(err)
+            bot.telegram_client.post(method='sendMessage', params={"text": error_message,
+                                                                   "chat_id": ADMIN_CHAT_ID})
+
+            logger.error(error_message)
+            bot.shutdown()
 
 
 

@@ -2,7 +2,7 @@ from sqlclient import SQLiteClient
 from telegram_client import TelegramClient
 from logging import getLogger, StreamHandler
 from envparse import Env
-from for_testing import Electricity
+from main import Electricity
 
 logger = getLogger(__name__)
 logger.addHandler(StreamHandler())
@@ -30,9 +30,10 @@ class Reminder:
 
     def notify(self, chat_ids: list):
         for chat_id in chat_ids:
-            if self.electricity.inform(self.electricity.get_condition(chat_id[1])) == True:
+            con = self.electricity.get_condition(chat_id[1])
+            if self.electricity.inform(con) == True:
                 res = self.telegram_client.post(method="sendMessage",
-                                                params={"text": "Увага! За годину можливе відключення електроенергії!",
+                                                params={"text": "❗️ Увага ! За годину можливе відключення електроенергії ! ❗️",
                                                         "chat_id": chat_id[0]})
                 logger.info(res)
 
@@ -48,10 +49,3 @@ class Reminder:
         self.execute()
 
 
-if __name__ == "__main__":
-    database_client = SQLiteClient("users.db")
-    telegram_client = TelegramClient(token=TOKEN, base_url="https://api.telegram.org")
-    electricity = Electricity()
-    reminder = Reminder(database_client=database_client, telegram_client=telegram_client, electricity=electricity)
-    reminder.setup()
-    reminder()
