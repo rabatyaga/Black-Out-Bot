@@ -22,6 +22,6 @@ reminder.setup()
 
 while True:
     current_time = datetime.now().strftime("%H.%M")
-    if current_time.split('.')[1] == '07':
+    if current_time.split('.')[1] == '00':
         reminder()
         time.sleep(60)

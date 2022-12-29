@@ -32,9 +32,18 @@ class Reminder:
         for chat_id in chat_ids:
             con = self.electricity.get_condition(chat_id[1])
             if self.electricity.inform(con) == True:
-                res = self.telegram_client.post(method="sendMessage",
-                                                params={"text": "❗️ Увага ! За годину можливе відключення електроенергії ! ❗️",
+                if con == "Є Енергія":
+                    res = self.telegram_client.post(method="sendMessage",
+                                                    params={
+                                                        "text": "⚠️ Увага ! За годину можливе відключення електроенергії ! ⚠️",
                                                         "chat_id": chat_id[0]})
+                elif con == "Можливе Відключення":
+                    res = self.telegram_client.post(method="sendMessage",
+                                                    params={
+                                                        "text": "❗️ Увага ! За годину планове відключення електроенергії ! ❗️",
+                                                        "chat_id": chat_id[0]})
+
+
                 logger.info(res)
 
     def execute(self):
