@@ -5,8 +5,8 @@ from envparse import Env
 from main import Electricity
 from reminder import Reminder
 from datetime import datetime
-
 import time
+
 logger = getLogger(__name__)
 logger.addHandler(StreamHandler())
 logger.setLevel("INFO")
@@ -21,7 +21,7 @@ reminder = Reminder(database_client=database_client, telegram_client=telegram_cl
 reminder.setup()
 
 while True:
-    current_time = datetime.now().strftime("%H.%M")
-    if current_time.split('.')[1] == '00':
+    now = datetime.now()
+    if now.minute == 0:
         reminder()
         time.sleep(60)

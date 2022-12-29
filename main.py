@@ -65,7 +65,7 @@ class Electricity:
 
     def get_condition(self, group: int) -> str:
         if self.current_time == '00':
-            if self.current_day != 1:
+            if self.current_day != 0:
                 day = self.current_day - 1
             else:
                 day = 6
