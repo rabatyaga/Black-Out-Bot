@@ -46,6 +46,15 @@ class Electricity:
     GROUP_2 = Dicts.GROUP_2
     GROUP_3 = Dicts.GROUP_3
 
+    def choose_day(self):
+        if self.current_time == '00':
+            if self.current_day != 1:
+                return self.current_day - 1
+            else:
+                return 6
+        else:
+            return self.current_day
+
     def get_time_zone(self):
         if int(self.current_time) >= 21 or int(self.current_time) == 0:
             return '21-1'
@@ -64,13 +73,7 @@ class Electricity:
 
 
     def get_condition(self, group: int) -> str:
-        if self.current_time == '00':
-            if self.current_day != 0:
-                day = self.current_day - 1
-            else:
-                day = 6
-        else:
-            day = self.current_day
+        day = self.choose_day()
         if group == 1:
             return self.GROUP_1[Dicts.WEEK_DAY[day]][self.get_time_zone()]
         elif group == 2:
@@ -79,12 +82,13 @@ class Electricity:
             return self.GROUP_3[Dicts.WEEK_DAY[day]][self.get_time_zone()]
 
     def get_day_sсhedule(self, group: int) -> dict:
+        day = self.choose_day()
         if group == 1:
-            return self.GROUP_1[Dicts.WEEK_DAY[self.current_day]]
+            return self.GROUP_1[Dicts.WEEK_DAY[day]]
         elif group == 2:
-            return self.GROUP_2[Dicts.WEEK_DAY[self.current_day]]
+            return self.GROUP_2[Dicts.WEEK_DAY[day]]
         else:
-            return self.GROUP_3[Dicts.WEEK_DAY[self.current_day]]
+            return self.GROUP_3[Dicts.WEEK_DAY[day]]
 
 
 
@@ -180,7 +184,7 @@ def option(message):
                            parse_mode='HTML')
         choose_option(message)
     elif message.text == '2 🕯':
-        bot.send_message(message.chat.id, text=f'<b>{Dicts.WEEK_DAY[Electricity.current_day]}, Група №{group}</b>',
+        bot.send_message(message.chat.id, text=f'<b>{Dicts.WEEK_DAY[Electricity().choose_day()]}, Група №{group}</b>',
                          parse_mode='HTML')
         condition = Electricity().get_day_sсhedule(int(group))
         for k, v in condition.items():
