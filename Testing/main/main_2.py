@@ -65,13 +65,17 @@ def choose_group(message):
                      parse_mode='HTML')
 
 
+
+
 @bot.callback_query_handler(func=lambda callback: callback.data)
 def to_json(callback):
+
     tg_name = callback.from_user.username
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name
     chat_id = callback.message.chat.id
     group_id = callback.data
+    bot.delete_message(callback.message.chat.id, callback.message.id)
 
     user = bot.user_actioner.get_user(user_id=str(user_id))
 
@@ -104,6 +108,20 @@ def choose_option(message):
                                            '5. Змінити групу.')
     bot.register_next_step_handler(msg, option)
 
+def on_off(message):
+    if message.text == "Підключити сповіщення":
+        bot.send_message(message.chat.id, text=f'Вітаю, {user_actioner.get_user(user_id=str(message.from_user.id))[1]}. '
+                                               f'Ви підключили сповіщення!\n'
+                                               'Кожного разу за годину перед можливим відключенням '
+                                               'Вам надходитиме попереджувальне повідомлення.')
+
+        bot.user_actioner.set_notify(user_id=str(message.from_user.id), notifications=1)
+        choose_option(message)
+    else:
+        bot.send_message(message.chat.id,
+                         text="Сповіщення про відключення електроенергії вимкнено !")
+        bot.user_actioner.set_notify(user_id=str(message.from_user.id), notifications=0)
+        choose_option(message)
 
 def option(message):
     group = bot.user_actioner.get_group(user_id=str(message.from_user.id))
@@ -150,13 +168,13 @@ def option(message):
             bot.send_photo(message.chat.id, img)
         choose_option(message)
     elif message.text == '4 ⏰':
-        bot.send_message(message.chat.id, text=f'Вітаю, {user_actioner.get_user(user_id=str(message.from_user.id))[1]}. '
-                                               f'Ви підключили сповіщення!\n'
-                                               'Кожного разу за годину перед можливим відключенням '
-                                               'Вам надходитиме попереджувальне повідомлення.')
+        kb = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        btn1 = types.KeyboardButton(text='Підключити сповіщення')
+        btn2 = types.KeyboardButton(text='Відключити сповіщення')
+        kb.add(btn1, btn2)
+        msg = bot.send_message(message.chat.id, text='<b>Оберіть опцію:</b>', reply_markup=kb, parse_mode='HTML')
+        bot.register_next_step_handler(msg, on_off)
 
-        bot.user_actioner.set_notify(user_id=str(message.from_user.id), notifications=1)
-        choose_option(message)
     elif message.text == '5 🔁':
         choose_group(message)
 
