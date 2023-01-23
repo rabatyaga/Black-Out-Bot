@@ -1,0 +1,36 @@
+2023-01-18 22:01:00.000351: INFO: Started notification====================================================================================================
+2023-01-18 22:01:00.001350: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.001350: INFO: Inform status for chat_id (336409011, 3): False
+2023-01-18 22:01:00.001350: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.001350: INFO: Next condition: Можливе Відключення, got result: 
+2023-01-18 22:01:00.002348: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.002348: INFO: Inform status for chat_id (1063158376, 3): False
+2023-01-18 22:01:00.002348: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.002348: INFO: Next condition: Можливе Відключення, got result: 
+2023-01-18 22:01:00.002348: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.003344: INFO: Inform status for chat_id (384986485, 3): False
+2023-01-18 22:01:00.003344: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:01:00.003344: INFO: Next condition: Можливе Відключення, got result: 
+2023-01-18 22:01:00.003344: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Немає Енергії
+2023-01-18 22:01:00.003344: INFO: Inform status for chat_id (5221573336, 1): False
+2023-01-18 22:01:00.003344: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Немає Енергії
+2023-01-18 22:01:00.003344: INFO: Next condition: Немає Енергії, got result: 
+2023-01-18 22:01:00.003344: INFO: Ended notification ====================================================================================================
+2023-01-18 22:14:08.103337: INFO: Started notification====================================================================================================
+2023-01-18 22:14:08.103337: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:08.103337: INFO: Inform status for chat_id (336409011, 3): True
+2023-01-18 22:14:08.103337: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:08.487406: INFO: Next condition: Можливе Відключення, got result: {'ok': True, 'result': {'message_id': 3797, 'from': {'id': 5922103173, 'is_bot': True, 'first_name': 'Black Out Test', 'username': 'black_out_test_bot'}, 'chat': {'id': 336409011, 'first_name': 'Саша', 'username': 'Shvayenko_O', 'type': 'private'}, 'date': 1674072848, 'text': '⚠️ Увага ! За годину можливе відключення електроенергії ! ⚠️'}}
+2023-01-18 22:14:08.487406: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:08.487406: INFO: Inform status for chat_id (1063158376, 3): True
+2023-01-18 22:14:08.488402: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:08.793612: INFO: Next condition: Можливе Відключення, got result: {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'}
+2023-01-18 22:14:08.793612: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:08.794610: INFO: Inform status for chat_id (384986485, 3): True
+2023-01-18 22:14:08.794610: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Можливе Відключення
+2023-01-18 22:14:09.124435: INFO: Next condition: Можливе Відключення, got result: {'ok': True, 'result': {'message_id': 3798, 'from': {'id': 5922103173, 'is_bot': True, 'first_name': 'Black Out Test', 'username': 'black_out_test_bot'}, 'chat': {'id': 384986485, 'first_name': 'Serhii', 'last_name': 'Bukin', 'username': 'bukin_serhii', 'type': 'private'}, 'date': 1674072848, 'text': '⚠️ Увага ! За годину можливе відключення електроенергії ! ⚠️'}}
+2023-01-18 22:14:09.125432: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Немає Енергії
+2023-01-18 22:14:09.125432: INFO: Inform status for chat_id (5221573336, 1): True
+2023-01-18 22:14:09.125432: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Немає Енергії
+2023-01-18 22:14:09.478418: INFO: Next condition: Немає Енергії, got result: {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'}
+2023-01-18 22:14:09.478418: INFO: Ended notification ====================================================================================================

@@ -1,2 +1,0 @@
-token = '5876754481:AAFDMskmHazPVNwcWIvEyX9ww4BZwWoKueE'
-chatId = 336409011

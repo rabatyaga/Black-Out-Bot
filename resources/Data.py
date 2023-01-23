@@ -1,6 +1,13 @@
-from datetime import datetime
-class Electricity:
-    current_time = datetime.now().strftime("%H")
+class Dicts:
+
+    SCHEDULE_1 = r"../resources/1group.png"
+    SCHEDULE_2 = r"../resources/2group.png"
+    SCHEDULE_3 = r"../resources/3group.png"
+
+    PICTURE_1 = r"../resources/night_lviv.jpg"
+    PICTURE_2 = r"../resources/lights.jpg"
+    PICTURE_3 = r"../resources/black_out.jpg"
+    PICTURE_4 = r"../resources/candle.jpg"
 
     TYPE_1 = {'1-5': 'Можливе Відключення',
               '5-9': 'Немає Енергії',
@@ -10,7 +17,7 @@ class Electricity:
               '21-1': 'Є Енергія'}
 
     TYPE_2 = {'1-5': 'Немає Енергії',
-              '5-9': 'Є Світло',
+              '5-9': 'Є Енергія',
               '9-13': 'Можливе Відкючення',
               '13-17': 'Немає Енергії',
               '17-21': 'Є Енергія',
@@ -47,33 +54,12 @@ class Electricity:
                'Субота': TYPE_3,
                'Неділя': TYPE_1}
 
-    def __init__(self, group, day, time=current_time):
-        self.group = group
-        self.day = day
-        self.time = time
 
-    def get_time_zone(self):
-        return '-'.join(list(filter(lambda x: int(self.current_time) in range(int(x[0]), int(x[1])), map(lambda x: x.split('-'), self.TYPE_1.keys())))[0])
-
-    def get_condition(self):
-        if self.group == 1:
-            return self.GROUP_1[self.day][self.get_time_zone()]
-        elif self.group == 2:
-            return self.GROUP_2[self.day][self.get_time_zone()]
-        else:
-            return self.GROUP_3[self.day][self.get_time_zone()]
-
-    def get_day_sсhedule(self):
-        if self.group == 1:
-            return self.GROUP_1[self.day]
-        elif self.group == 2:
-            return self.GROUP_2[self.day]
-        else:
-            return self.GROUP_3[self.day]
-
-V_V = Electricity(3, "П'ятниця")
-print(V_V.get_condition())
-print(V_V.get_day_sсhedule())
-print(V_V.__dict__)
-
+    WEEK_DAY = {0: 'Понеділок',
+                1: 'Вівторок',
+                2: 'Середа',
+                3: 'Четвер',
+                4: "П'ятниця",
+                5: 'Субота',
+                6: 'Неділя'}
 
