@@ -1,0 +1,3 @@
+2023-01-18 18:18:25.872884: INFO: Можливе Відключення
+2023-01-18 19:21:56.191195: INFO: <built-in method now of type object at 0x70E876F0> ::: <class 'requests.exceptions.ConnectionError'> ::: ('Connection aborted.', timeout('The write operation timed out'))
+2023-01-18 19:23:42.679168: INFO: <built-in method now of type object at 0x70E876F0> ::: <class 'requests.exceptions.ConnectionError'> ::: ('Connection aborted.', timeout('The write operation timed out'))
