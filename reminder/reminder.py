@@ -1,7 +1,7 @@
 from clients.sqlclient import SQLiteClient
 from clients.telegram_client import TelegramClient
 from resources.TOKEN import token
-from electricity import *
+from resources.electricity import *
 from resources.Data import Dicts
 
 from logger_reminder import *
