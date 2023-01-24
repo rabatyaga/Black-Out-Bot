@@ -2,11 +2,11 @@ from datetime import datetime
 import telebot
 from telebot import types
 from resources.Data import Dicts
-from electricity import *
-from logger_main import *
+from resources.electricity import *
 from resources.TOKEN import token, chatId
 from clients.telegram_client import TelegramClient
 from clients.sqlclient import SQLiteClient, UserActioner
+# from logger_main import *
 
 TOKEN = token
 ADMIN_CHAT_ID = chatId

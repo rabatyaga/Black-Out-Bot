@@ -1,6 +1,6 @@
 from resources.Data import Dicts
 from datetime import datetime
-from logger_reminder import *
+# from reminder.logger_reminder import *
 
 
 GROUP_1 = Dicts.GROUP_1
@@ -35,7 +35,7 @@ def inform(group: int):
     right_border = get_time_zone().split('-')[1]
     difference = int(right_border) - int(current_time)
     next_condition = get_next_condition(group)
-    send_log(f"Difference: {difference}, right boarder: {right_border}, current_time: {current_time}, next condition: {next_condition}")
+    # send_log(f"Difference: {difference}, right boarder: {right_border}, current_time: {current_time}, next condition: {next_condition}")
     if next_condition in ("Можливе Відключення", "Немає Енергії") and difference == 1:
         return True
     else:

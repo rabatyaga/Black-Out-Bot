@@ -34,3 +34,13 @@
 2023-01-18 22:14:09.125432: INFO: Difference: -21, right boarder: 1, current_time: 22, next condition: Немає Енергії
 2023-01-18 22:14:09.478418: INFO: Next condition: Немає Енергії, got result: {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'}
 2023-01-18 22:14:09.478418: INFO: Ended notification ====================================================================================================
+2023-01-24 18:17:02.607073: INFO: Started notification====================================================================================================
+2023-01-24 18:17:02.608070: INFO: Inform status for chat_id (336409011, 3): True
+2023-01-24 18:17:02.900454: INFO: Next condition: Можливе Відключення, got result: {'ok': True, 'result': {'message_id': 3842, 'from': {'id': 5922103173, 'is_bot': True, 'first_name': 'Black Out Test', 'username': 'black_out_test_bot'}, 'chat': {'id': 336409011, 'first_name': 'Саша', 'username': 'Shvayenko_O', 'type': 'private'}, 'date': 1674577022, 'text': '⚠️ Увага ! За годину можливе відключення електроенергії ! ⚠️'}}
+2023-01-24 18:17:02.901452: INFO: Inform status for chat_id (1063158376, 3): True
+2023-01-24 18:17:03.113517: INFO: Next condition: Можливе Відключення, got result: {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'}
+2023-01-24 18:17:03.113517: INFO: Inform status for chat_id (384986485, 3): True
+2023-01-24 18:17:03.313017: INFO: Next condition: Можливе Відключення, got result: {'ok': True, 'result': {'message_id': 3843, 'from': {'id': 5922103173, 'is_bot': True, 'first_name': 'Black Out Test', 'username': 'black_out_test_bot'}, 'chat': {'id': 384986485, 'first_name': 'Serhii', 'last_name': 'Bukin', 'username': 'bukin_serhii', 'type': 'private'}, 'date': 1674577022, 'text': '⚠️ Увага ! За годину можливе відключення електроенергії ! ⚠️'}}
+2023-01-24 18:17:03.313017: INFO: Inform status for chat_id (5221573336, 1): True
+2023-01-24 18:17:03.451701: INFO: Next condition: Немає Енергії, got result: {'ok': False, 'error_code': 400, 'description': 'Bad Request: chat not found'}
+2023-01-24 18:17:03.451701: INFO: Ended notification ====================================================================================================
